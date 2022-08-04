@@ -68,7 +68,7 @@ const Login = () => {
     )
 }
 
-export default login
+export default Login
 
 const Options = [
     { label: 'JavaScript' },
