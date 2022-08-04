@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Head from 'next/head'
 import { CircularProgress, Autocomplete, Button, TextField } from '@mui/material';
 import styles from '../styles/Login.module.css'
 import { useAuth } from '../context';
@@ -28,6 +29,10 @@ const login = () => {
 
     return (
         <>
+
+        <Head>
+          <title>Group Chat</title>
+        </Head>
             <form className={styles.modal}>
 
                 <h1 sx={{ m: '2rem auto' }}>Welcome</h1>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import SocketIOClient from "socket.io-client";
 import { useAuth } from '../context';
@@ -25,7 +26,7 @@ export default function Home() {
 
   useEffect(() => {
     if (name && room) {
-      const newSocket = SocketIOClient.connect(`http://localhost:8000`);
+      const newSocket = SocketIOClient.connect(`https://nextjs-message-server.herokuapp.com`);
       setSocket(newSocket);
       return () => newSocket.close();
     } else {
@@ -87,6 +88,10 @@ export default function Home() {
   else {
     return (
       <div className={styles.container}>
+
+        <Head>
+          <title>Group Chat</title>
+        </Head>
         <h1 className={styles.title}>Group Chat</h1>
         <div className={styles.wrapper}>
           <div className={styles.chat_box}>
