@@ -5,7 +5,7 @@ import styles from '../styles/Login.module.css'
 import { useAuth } from '../context';
 import { useRouter } from 'next/router'
 
-const login = () => {
+const Login = () => {
     const [user, setUser] = useState({ name: '', room: '' })
     const [timer, setTimer] = useState()
     const [loading, setLoading] = useState(false)
@@ -30,9 +30,9 @@ const login = () => {
     return (
         <>
 
-        <Head>
-          <title>Group Chat</title>
-        </Head>
+            <Head>
+                <title>Group Chat</title>
+            </Head>
             <form className={styles.modal}>
 
                 <h1 sx={{ m: '2rem auto' }}>Welcome</h1>
