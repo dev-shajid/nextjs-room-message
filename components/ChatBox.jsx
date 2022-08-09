@@ -6,28 +6,53 @@ import { useAuth } from '../context'
 import { useEffect } from 'react'
 import ChatMessages from './ChatMessages'
 import { useRef } from 'react'
+import TypingLoading from './TypingLoading'
 
 const ChatBox = ({ socket, changedRoom, alertMessage }) => {
     const { name, room } = useAuth()
     const [message, setMessage] = useState('')
     const [arrivalMessage, setArrivalMessage] = useState()
     const [messages, setMessages] = useState([])
+    const [typingUsers, setTypingUsers] = useState([])
     const chatElement = useRef(null)
     const sound = new Audio('./notification.mp3')
+    const inputElement = useRef(null)
 
-    const scrollToBottom = () => {
-        setTimeout(()=>{
+    const scrollToBottom = (t=10) => {
+        setTimeout(() => {
             chatElement.current.scrollTo({
-                top:chatElement.current.scrollHeight,
-                behavior:'smooth'
+                top: chatElement.current.scrollHeight,
+                behavior: 'smooth'
             })
-        },10)
-      };
+        }, t)
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        setMessage('')
-        socket.emit("sendMessage", { name, room: changedRoom, message });
+        if(message.trim()){
+            setMessage('')
+            socket.emit("sendMessage", { name, room: changedRoom, message });
+        }
+        // inputElement.current.blur()
+        socket.emit('typing', {name, room: changedRoom, typing:false})
+    }
+
+    const handleChange=(e)=>{
+        setMessage(e.target.value)
+        if(e.target.value.trim()){
+            socket.emit('typing', {name, room: changedRoom, typing:true})
+        }
+        if(!e.target.value.trim()){
+            socket.emit('typing', {name, room: changedRoom, typing:false})
+        }
+    }
+
+    const handleFocus=()=>{
+        message.trim() && socket.emit('typing', {name, room: changedRoom, typing:true})
+    }
+
+    const handleBlur=()=>{
+        socket.emit('typing', {name, room: changedRoom, typing:false})
     }
 
     useEffect(() => {
@@ -37,28 +62,34 @@ const ChatBox = ({ socket, changedRoom, alertMessage }) => {
                 scrollToBottom()
             })
 
-            socket.on('notification',()=>sound.play())
+            socket.on('typing',({name, typing})=>{
+                typing?setTypingUsers([...typingUsers, name]):setTypingUsers(typingUsers.filter(e=>e!=name))
+                scrollToBottom()
+            })
+
+            socket.on('notification', () => sound.play())
         }
     }, [socket])
 
     useEffect(() => {
-        if(arrivalMessage?.message){
+        if (arrivalMessage?.message) {
             setMessages([...messages, arrivalMessage])
         }
 
     }, [arrivalMessage])
 
     useEffect(() => {
-        if(alertMessage?.message){
+        if (alertMessage?.message) {
             setMessages([...messages, alertMessage])
         }
         scrollToBottom()
     }, [alertMessage])
 
-    useEffect(()=>{
+    useEffect(() => {
         setMessages([])
-        // setArrivalMessage({})
-    },[changedRoom])
+        setMessage('')
+        setTypingUsers([])
+    }, [changedRoom])
 
     return (
         <>
@@ -67,16 +98,23 @@ const ChatBox = ({ socket, changedRoom, alertMessage }) => {
             </div>
             <div ref={chatElement} className={styles.chat_messages}>
                 {
-                    messages[0] && <ChatMessages messages={messages} name={name}/>
+                    messages[0] && <ChatMessages messages={messages} name={name} />
+                }
+                {
+                    typingUsers[0] && typingUsers.map((e,i)=>(
+                        <div key={i}>
+                            <TypingLoading name={e}/>
+                        </div>
+                    ))
                 }
             </div>
 
             <form onSubmit={handleSubmit} className={styles.chat_input_box}>
-                <input onChange={(e) => setMessage(e.target.value)} value={message} type='text' placeholder='Type something...' />
+                <input ref={inputElement} onFocus={handleFocus} onBlur={handleBlur} onChange={handleChange} value={message} type='text' placeholder='Type something...' />
                 <IconButton
                     disabled={message.trim() ? false : true}
                     sx={{ width: 'auto' }}
-                // type='submit'
+                    type='submit'
                 >
                     <Send />
                 </IconButton>

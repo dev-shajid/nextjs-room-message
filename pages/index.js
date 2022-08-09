@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import SocketIOClient from "socket.io-client";
+import io from "socket.io-client";
 import { useAuth } from '../context';
 import { useRouter } from 'next/router'
 import ChatLeft from '../components/AbailableRooms';
@@ -27,7 +27,8 @@ export default function Home() {
   useEffect(() => {
     if (name && room) {
       const newSocket = SocketIOClient.connect(`https://nextjs-message-server.herokuapp.com`);
-      setSocket(newSocket);
+      // const newSocket = io.connect(`http://localhost:8000`)
+      setSocket(newSocket)
       return () => newSocket.close();
     } else {
       router.push("/login")
