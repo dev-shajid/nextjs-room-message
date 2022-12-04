@@ -26,7 +26,7 @@ export default function Home() {
 
   useEffect(() => {
     if (name && room) {
-      fetch("/api/socket.js")
+      fetch("/api/socketio")
       .finally(()=>{
         const newSocket = io()
         setSocket(newSocket)
