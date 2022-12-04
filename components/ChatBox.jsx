@@ -1,5 +1,5 @@
 import { IconButton } from '@mui/material'
-import { LogoDev, Send } from '@mui/icons-material'
+import { Send } from '@mui/icons-material'
 import styles from '../styles/Home.module.css'
 import { useState } from 'react'
 import { useAuth } from '../context'

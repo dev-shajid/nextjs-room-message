@@ -26,10 +26,11 @@ export default function Home() {
 
   useEffect(() => {
     if (name && room) {
-      const newSocket = io.connect(`https://nextjs-room-message-server-production.up.railway.app/`);
-      // const newSocket = io.connect(`http://localhost:8000`)
-      setSocket(newSocket)
-      return () => newSocket.close();
+      fetch("/api/socket.js")
+      .finally(()=>{
+        const newSocket = io()
+        setSocket(newSocket)
+      })
     } else {
       router.push("/login")
     }
