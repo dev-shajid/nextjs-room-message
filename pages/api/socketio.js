@@ -69,6 +69,14 @@ const Socketio = (req, res) => {
             })
         })
 
+        res.socket.server.io = io
+    }
+    res.end();
+}
+
+export const config = {
+    api: {
+        bodyParser: false
     }
 }
 
